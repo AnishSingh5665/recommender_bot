@@ -90,5 +90,28 @@
       ],
       "weekly_goal": "Master hash map patterns in 4 problems over 3 days"
     }
+  },
+  {
+    "code": "import streamlit as st\r\nimport pandas as pd\r\nimport pickle\r\n\r\n# Load pre-trained model\r\nmodel_path = \"C:/Users/YERNI KUMAR/Downloads/forecasting/xgb_model.pkl\"\r\nwith open(model_path, \"rb\") as file:\r\n    model = pickle.load(file)\r\n\r\n# Function to encode user inputs based on the model's feature expectations\r\ndef encode_user_input(input_df, model):\r\n    # Perform necessary encoding for categorical variables as done during model training\r\n    input_encoded = pd.get_dummies(input_df)\r\n    \r\n    # Align with the columns used during training\r\n    input_encoded = input_encoded.reindex(columns=model.feature_names_in_, fill_value=0)\r\n    \r\n    return input_encoded\r\n\r\n# Function to collect user inputs\r\ndef user_input_features():\r\n    st.sidebar.header(\"User Input Features\")\r\n\r\n    # Center the input form using columns to manage layout\r\n    col1, col2, col3 = st.columns([1, 2, 1])  # Make the center column wider\r\n\r\n    with col2:\r\n        st.subheader(\"Resale Price Prediction\")\r\n\r\n        # Collect user inputs for all features in the center column\r\n        town = st.selectbox(\"Town\", options=['Town A', 'Town B', 'Town C'])\r\n        flat_type = st.selectbox(\"Flat Type\", options=['Type A', 'Type B', 'Type C'])\r\n        block = st.text_input(\"Block\")\r\n        street_name = st.text_input(\"Street Name\")\r\n        storey_range = st.selectbox(\"Storey Range\", options=['01 to 03', '04 to 06', '07 to 09'])\r\n        floor_area_sqm = st.number_input(\"Floor Area (sqm)\", min_value=0.0, step=1.0)\r\n        flat_model = st.selectbox(\"Flat Model\", options=['Model A', 'Model B', 'Model C'])\r\n        lease_commence_date = st.number_input(\"Lease Commence Date\", min_value=1900, step=1)\r\n        remaining_lease = st.number_input(\"Remaining Lease\", min_value=0, step=1)\r\n\r\n        # Create a DataFrame from user input\r\n        input_data = {\r\n            'town': town,\r\n            'flat_type': flat_type,\r\n            'block': block,\r\n            'street_name': street_name,\r\n            'storey_range': storey_range,\r\n            'floor_area_sqm': floor_area_sqm,\r\n            'flat_model': flat_model,\r\n            'lease_commence_date': lease_commence_date,\r\n            'remaining_lease': remaining_lease\r\n        }\r\n\r\n        input_df = pd.DataFrame([input_data])\r\n\r\n        # Encode categorical features\r\n        input_encoded = encode_user_input(input_df, model)\r\n\r\n        return input_encoded\r\n\r\n# Prediction function\r\ndef predict_resale_price(input_df):\r\n    # Perform prediction\r\n    prediction = model.predict(input_df.values)\r\n    return prediction\r\n\r\n# Main application\r\ndef main():\r\n    st.title(\"Resale Price Prediction\")\r\n\r\n    # Center the input form and get inputs\r\n    inputs = user_input_features()\r\n\r\n    # Display input data\r\n    st.subheader(\"User Input Data\")\r\n    st.write(inputs)\r\n\r\n    # Predict resale price\r\n    col1, col2, col3 = st.columns([1, 2, 1])  # Center button and result\r\n    with col2:\r\n        if st.button(\"Predict\"):\r\n            result = predict_resale_price(inputs)\r\n            st.subheader(f\"Predicted Resale Price: ${result[0]:,.2f}\")\r\n\r\nif __name__ == \"__main__\":\r\n    main()\r\n",
+    "roadmap": {
+      "next_problem": "LeetCode #15 - Three Sum",
+      "concepts_to_learn": [
+        "Advanced Hash Map Usage",
+        "Time-Space Optimization"
+      ],
+      "resources": [
+        {
+          "type": "video",
+          "title": "NeetCode - Hash Maps",
+          "link": "https://youtu.be/0ZDYRxBvcm8"
+        },
+        {
+          "type": "article",
+          "title": "Hash Table Deep Dive",
+          "link": "https://www.geeksforgeeks.org/hashing-data-structure/"
+        }
+      ],
+      "weekly_goal": "Master hash map patterns in 4 problems over 3 days"
+    }
   }
 ]
