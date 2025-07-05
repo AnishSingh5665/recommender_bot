@@ -4,26 +4,31 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
+# Load environment variables
 load_dotenv()
+
+# Configure the Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-model = genai.GenerativeModel("gemini-pro")
+# Set the correct model name
+MODEL_NAME = "models/gemini-1.5-flash"
 
 def get_llm_feedback(code):
     prompt = f"""
-    Analyze this Python code and give feedback:
-    
-    1. Strengths in terms of logic, structure, readability
-    2. Weaknesses or edge cases missed
-    3. Suggest next similar LeetCode-style problem
-    4. Suggest related concepts to learn
-    5. Suggest 2 resources (1 video, 1 article)
-    
+    Analyze this Python code and provide:
+    1. Strengths in logic, structure, or optimization
+    2. Weaknesses or areas for improvement
+    3. One similar LeetCode-style problem to try next
+    4. Concepts to focus on
+    5. One helpful video and one article
+
     Code:
     {code}
     """
+
     try:
-        response = model.generate_content(prompt)
+        model = genai.GenerativeModel(MODEL_NAME)
+        response = model.generate_content([{"role": "user", "parts": [{"text": prompt}]}])
         return {"llm_feedback": response.text}
     except Exception as e:
         return {"error": str(e)}

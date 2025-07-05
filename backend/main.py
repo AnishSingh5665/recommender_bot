@@ -11,7 +11,7 @@ from storage import save_user_progress
 
 app = FastAPI(title="AI-Powered Coding Mentor")
 
-# CORS for frontend
+# CORS for frontend support
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,25 +22,28 @@ app.add_middleware(
 
 @app.post("/analyze/")
 async def analyze_code_endpoint(file: UploadFile = File(...)):
+    # Step 0: Read uploaded file
     code = (await file.read()).decode("utf-8")
 
-    # Step 1: Analyze code structure
+    # Step 1: Analyze code structure (AST)
     analysis = analyze_code(code)
 
-    # Step 2: Generate code embeddings
+    # Step 2: Generate embedding (optional for future use)
     embedding = generate_embedding(code)
 
     # Step 3: Get feedback from LLM
-    feedback = get_llm_feedback(code)
+    feedback_response = get_llm_feedback(code)
+    feedback_text = feedback_response.get("llm_feedback") if isinstance(feedback_response, dict) else str(feedback_response)
 
-    # Step 4: Generate learning plan
-    roadmap = generate_learning_plan(analysis, feedback)
+    # Step 4: Generate dynamic learning plan based on feedback
+    roadmap = generate_learning_plan(analysis, feedback_text)
 
-    # Step 5: Save data
+    # Step 5: Save user data
     save_user_progress(code, roadmap)
 
+    # Step 6: Return structured response
     return {
         "analysis": analysis,
-        "llm_feedback": feedback,
+        "llm_feedback": feedback_text,
         "learning_plan": roadmap
     }
